@@ -25,13 +25,11 @@ def getlatlon():
 		"-73.99498749,	40.75517654", "-73.91600037,40.74634933", "-73.99924469,40.72764587", "-73.98488617,40.73621368", "-73.98627472,40.74737167"
 		]
 	randomnum = random.randint(0, 53)
-	b=a[randomnum]
-	return b	
+	return a[randomnum]	
      		 
 def getstore():
 	taxi=['Y','N']
-	randomnum = random.randint(0, 1)
-	return randomnum
+	return random.randint(0, 1)
 
 #@JsonPropertyOrder({"id", "vendorId", "pickupDate", "dropoffDate", "passengerCount", "pickupLongitude", "pickupLatitude", "dropoffLongitude", "dropoffLatitude", "storeAndFwdFlag", "gcDistance", 
 #"tripDuration", "googleDistance", "googleDuration"})
@@ -39,7 +37,7 @@ def getstore():
 
 while True:
 	i=int(i)+1
-	id='id' + str(random.randint(1665586, 8888888))
+	id = f'id{random.randint(1665586, 8888888)}'
 	vendorId=random.randint(1, 2)
 	pickupDate= datetime.datetime.now().isoformat()
 	dropoffDate= datetime.datetime.now() + timedelta(minutes=random.randint(30, 100))
@@ -52,29 +50,35 @@ while True:
 	location=getlatlon()
 	location=location.split(",")
 	dropoffLongitude=location[0]
-	dropoffLatitude=location[1]	
+	dropoffLatitude=location[1]
 	storeAndFwdFlag=getstore()
 	gcDistance=random.randint(1, 7)
 	tripDuration=random.randint(8, 10000)
 	googleDistance=gcDistance
 	googleDuration=tripDuration
-	
-	new_dict={}
-	new_dict["id"]=id
-	new_dict["vendorId"]=vendorId
-	new_dict["pickupDate"]=pickupDate
-	new_dict["dropoffDate"]=dropoffDate
-	new_dict["passengerCount"]=passengerCount
-	new_dict["pickupLongitude"]=pickupLongitude
-	new_dict["pickupLatitude"]=pickupLatitude
-	new_dict["dropoffLongitude"]=dropoffLongitude
-	new_dict["dropoffLatitude"]=dropoffLatitude
-	new_dict["storeAndFwdFlag"]=storeAndFwdFlag
-	new_dict["gcDistance"]=gcDistance
-	new_dict["tripDuration"]=tripDuration
-	new_dict["googleDistance"]=googleDistance
-	new_dict["googleDuration"]=googleDuration
-	
+
+	new_dict = {
+		"id": id,
+		"vendorId": vendorId,
+		"pickupDate": pickupDate,
+		"dropoffDate": dropoffDate,
+		"passengerCount": passengerCount,
+		"pickupLongitude": pickupLongitude,
+		"pickupLatitude": pickupLatitude,
+		"dropoffLongitude": dropoffLongitude,
+		"dropoffLatitude": dropoffLatitude,
+		"storeAndFwdFlag": storeAndFwdFlag,
+		"gcDistance": gcDistance,
+		"tripDuration": tripDuration,
+		"googleDistance": googleDistance,
+		"googleDuration": googleDuration,
+	}
+
 	response=clientkinesis.put_record(StreamName=kdsname, Data=json.dumps(new_dict), PartitionKey=id)
-	print("Total ingested:"+str(i) +",ReqID:"+ response['ResponseMetadata']['RequestId'] + ",HTTPStatusCode:"+ str(response['ResponseMetadata']['HTTPStatusCode']))
+	print(
+		f"Total ingested:{str(i)},ReqID:"
+		+ response['ResponseMetadata']['RequestId']
+		+ ",HTTPStatusCode:"
+		+ str(response['ResponseMetadata']['HTTPStatusCode'])
+	)
 
